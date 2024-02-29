@@ -16,11 +16,10 @@
       service:
         name: docker
         state: started
-          # - name: stop existed container
-          # shell: docker stop $(docker ps -a -q)
-          #become: yes
-          # - name: delete all container
-          #shell: docker rm $(docker ps -a -q)
-
+    - name: stop existed container
+      shell: docker stop $(docker ps -a -q)
+      become: yes
+    - name: delete all container
+      shell: docker rm $(docker ps -a -q)
     - name: create container
       command: sudo docker run -itd -p 8084:8081 moreaniket/insurance:1.0
