@@ -152,6 +152,6 @@ resource "aws_instance" "prod-server" {
   EOF
 
   tags = {
-    name = "prod-server"
+    Name = "prod-server"
   }
 }
