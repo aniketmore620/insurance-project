@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+    stages {
+        stage('git checkout') {
+            steps {
+                git credentialsId: 'github', url: 'https://github.com/aniketmore620/insurance-project.git'
+            }
+        }
+        stage('initialized terraform') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+        stage('terraform planning') {
+            steps {
+            sh 'terraform plan'
+        }
+    }
+       stage('deploy on prod-server') {
+           steps {
+               sh 'terraform apply --auto-approve'
+           }
+       }
+}
+}
