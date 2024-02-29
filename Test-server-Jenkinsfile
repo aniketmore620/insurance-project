@@ -1,0 +1,52 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('git checkout') {
+            steps {
+                git credentialsId: 'github', url: 'https://github.com/aniketmore620/insurance-project.git'
+            }
+        }
+        stage('code-packaging') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Generate HTML report') {
+            steps {
+                publishHTML([allowMissing: false,
+                alwaysLinkToLastBuild: false,
+                keepAll: false,
+                reportDir: '/var/lib/jenkins/workspace/Test-server/target/',
+                reportFiles: 'index.html',
+                reportName: 'HTML Report',
+                reportTitles: '',
+                useWrapperFileDirectly: true])
+            }
+        }
+        stage('build-docker-image') {
+            steps {
+                sh 'docker build -t moreaniket/insurance:1.0 .'
+            }
+        }
+        stage('docker-push & docker-login') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhubpass', variable: 'dockerhubpass')]) {
+                    sh 'docker login -u moreaniket -p ${dockerhubpass}'
+                }
+                sh 'docker push moreaniket/insurance:1.0'
+            }
+        }
+        stage('deploy on test server') {
+            steps {
+            ansiblePlaybook become: true,
+            credentialsId: 'test-server',
+            disableHostKeyChecking: true,
+            installation: 'ansible',
+            inventory: '/etc/ansible/hosts',
+            playbook: 'ansible-playbook.yml',
+            vaultTmpPath: ''
+        }
+    }
+}
+}
