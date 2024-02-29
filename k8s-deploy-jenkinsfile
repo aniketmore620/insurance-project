@@ -1,0 +1,17 @@
+node {
+    stage('git checking out') {
+        git credentialsId: 'github', url: 'https://github.com/aniketmore620/insurance-project.git'
+    }
+    
+    stage('deployment using k8s') {
+        sh 'sudo kubectl apply -f kubernetes-deploy-svc.yml'
+    }
+    
+    stage('get all data') {
+        sh 'sudo kubectl get all -o wide'
+    }
+    
+    stage('view ip address') {
+            sh 'curl http://checkip.amazonaws.com'
+        }
+    }
