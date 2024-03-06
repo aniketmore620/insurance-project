@@ -29,7 +29,7 @@ metadata:
 spec:
   type: NodePort
   selector:
-    app: insureme  # Updated to match the label in Deployment
+    app: insureme  
   ports:
     - port: 8081
       targetPort: 8081
